@@ -1,6 +1,7 @@
 import uuid
 from django.contrib.auth.models import AbstractUser,BaseUserManager
 from django.db import models
+from django_countries.fields import CountryField
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -39,6 +40,7 @@ class CustomUserModel(AbstractUser):
     email = models.EmailField(unique=True, db_index=True) 
 
     username = models.CharField(max_length=200, unique=True, null=True, blank=True) 
+    country = CountryField(blank_label='(select country)', null=True, blank=True)
 
     objects = CustomUserManager()
 
@@ -67,4 +69,5 @@ class CustomUserModel(AbstractUser):
         ordering = ('username', 'first_name', 'email',)
         verbose_name = 'User'
         verbose_name_plural = 'Users'
+        db_table = 'custom_user_model'
 
