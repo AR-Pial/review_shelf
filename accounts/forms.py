@@ -12,7 +12,7 @@ class UserRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = CustomUserModel
-        fields = ['email', 'password', 'first_name', 'last_name', 'country']
+        fields = ['first_name','last_name','email','country', 'password','confirm_password']
 
     def clean_password(self):
         password = self.cleaned_data.get('password')
