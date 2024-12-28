@@ -19,6 +19,8 @@ class CustomLoginView(View):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+            if user.is_superuser or user.groups.filter(name='Admin').exists():
+                return render(request, 'dashboard/dashboard.html')
             return render(request, 'user_pages/home.html')
         return render(request, 'accounts/login.html', {'form': form})
     
