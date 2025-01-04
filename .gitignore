@@ -56,3 +56,6 @@ junit-reports/
 
 # Misc
 *.lock
+
+venv/
+
