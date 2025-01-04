@@ -21,9 +21,6 @@ build/
 *.pyc
 *.pyo
 db.sqlite3
-/static/
-media/
-
 # Laravel files (if using Laravel)
 vendor/
 storage/*.key
