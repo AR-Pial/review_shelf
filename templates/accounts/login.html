@@ -1,11 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    login
-</body>
-</html>
+{% extends 'accounts/auth_base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Login{% endblock %}
+
+{% block heading %}Login to Your Account{% endblock %}
+
+{% block content %}
+<div class="row w-100 justify-content-center py-lg-2">
+    <div class="col-lg-7 my-5 rounded shadow p-0 m-0">
+        <form class="row w-100 align-items-stretch px-0 mx-0" method="post">
+            {% csrf_token %}
+            
+            <!-- Image Section -->
+            <div class="col-12 col-lg-6 d-flex align-items-center justify-content-center bg-light p-3">
+                <img class="h-100 overflow-hidden" src="{% static 'images/side_images/img1.png' %}" alt="Login Illustration">
+            </div>
+            
+            <!-- Login Box -->
+            <div class="col-12 col-lg-6 bg-white p-3 p-lg-5 d-flex flex-column justify-content-center">
+                <h4 class="text-center pb-2">Login</h4>
+                {% for field in form %}
+                    <div class="mb-1">
+                        {{ field|as_crispy_field }}
+                        {% if field.errors %}
+                            <div class="text-danger small">
+                                {% for error in field.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                
+                {% if form.non_field_errors %}
+                    <div class="text-danger small mb-2">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div>
+                    <button class="btn btn-success w-100" type="submit">Login</button>
+                </div>
+                <p class="pt-2 text-muted text-center">Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
