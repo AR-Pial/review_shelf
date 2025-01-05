@@ -13,6 +13,11 @@ a{
     background-color: black;
 }
 
+.fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+
 /* admin-sidebar-menu */
 .admin-sidebar-menu ul{
  list-style-type: none !important;

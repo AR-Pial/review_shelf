@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from .models import Author
 from .forms import AuthorForm
+from django.contrib import messages
 
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'dashboard/dashboard.html'
@@ -32,9 +33,10 @@ class AuthorCreateView(CreateView):
     success_url = reverse_lazy('author')  
 
     def form_valid(self, form):
-        print("form validation")
-        # Optionally, you can log or modify the form data before saving.
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        # Add success message
+        messages.success(self.request, "Author created successfully!")
+        return response
     
     def form_invalid(self, form):
         print("Form is invalid:", form.errors)  # Print errors if form is invalid
