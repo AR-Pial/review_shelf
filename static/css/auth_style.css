@@ -1,0 +1,15 @@
+
+a{
+    text-decoration: none;
+}
+
+.auth-main-bg{
+    background-color: rgb(235, 244, 244) !important;
+}
+.auth-navbar-bg{
+    background-color: black;
+}
+
+.auth-footer-bg{
+    background-color: black;
+}

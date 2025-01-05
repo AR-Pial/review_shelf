@@ -9,6 +9,7 @@ class Author(models.Model):
     bio = models.TextField(blank=True, null=True)
     dob = models.DateField(blank=True, null=True)
     country = CountryField(blank=True, null=True)
+    image = models.ImageField(upload_to='authors/', blank=True, null=True) 
 
     class Meta:
         db_table = 'author'

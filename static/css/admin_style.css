@@ -1,0 +1,19 @@
+
+a{
+    text-decoration: none;
+}
+
+.sidebar-bg{
+    background-color: #bb56ea;
+}
+.topbar-bg{
+    background-color: aliceblue;
+}
+.auth-footer-bg{
+    background-color: black;
+}
+
+/* admin-sidebar-menu */
+.admin-sidebar-menu ul{
+ list-style-type: none !important;
+}
