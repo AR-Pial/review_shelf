@@ -1,33 +1,126 @@
 {% extends 'dashboard/dashboard_base.html' %}
-{% load static %}
-{% load crispy_forms_tags %}
-
-{% block title %}Dashboard{% endblock %}
 
 {% block content %}
-    
-    <div class="table-responsive my-2 bg-light p-2 p-lg-3">
-        <div class="d-flex justify-content-between">
-            <h4>Author List</h4>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
-                Add Author
-            </button>
-        </div>
-        <table class="table table-striped">
+<div class="container mt-4">
+    <div class="d-flex justify-content-between">
+        <h4>Author List</h4>
+        <button class="btn btn-sm btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createModal">
+            Add New Author
+        </button>
+    </div>
+
+    <!-- Author List -->
+    <div class="table-responsive">
+        <table class="table table-bordered">
             <thead>
                 <tr>
+                    <th>Image</th>
                     <th>Name</th>
-                    <th>Nationality</th>
+                    <th>Date of Birth</th>
+                    <th>Country</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
+                {% for author in authors %}
                 <tr>
-                    <td>xxx</td>
-                    <td>abc</td>
+                    <td>
+                        {% if author.image %}
+                            <img src="{{ author.image.url }}" alt="Author Image" class="img-thumbnail" width="65">
+                        {% else %}
+                            <span>No Image</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ author.name }}</td>
+                    <td>{{ author.dob }}</td>
+                    <td>{{ author.country }}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning edit-btn" data-id="{{ author.uuid }}" data-url="{% url 'author_edit' author.uuid %}">
+                            Edit
+                        </button>
+                        <form method="POST" action="{% url 'author_delete' author.uuid %}" class="d-inline delete-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
                 </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No authors found.</td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
-    {% include 'dashboard/author/createModal.html' %}
-    
+</div>
+
+<!-- Include Modal -->
+{% include 'dashboard/author/createModal.html' %}
+{% include 'dashboard/author/editModal.html' %}
+
+{% endblock %}
+{% block script %}
+    <script>
+        $(document).ready(function () {
+            // Handle form submission via AJAX
+            $('#createForm').on('submit', function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                var form = $(this);
+                var formData = new FormData(form[0]); // Serialize form data
+
+                $.ajax({
+                    url: "{% url 'author_create' %}", // URL for creating author
+                    type: 'POST',
+                    data: formData,
+                    processData: false, // Don't process the data
+                    contentType: false, // Let jQuery handle content type
+                    success: function (response) {
+                        location.reload(); 
+                    },
+                    error: function (response) {
+                        if (response.responseJSON && response.responseJSON.errors) {
+                            // Clear previous errors
+                            //$('.text-danger').empty();
+                            
+                            // Loop through the errors and display them
+                            $.each(response.responseJSON.errors, function (field, errors) {
+                                $('#' + field + '-error').html(errors.join('<br>'));
+                            });
+                    
+                            toastr.error('Error submitting the form!'); // Optional: Show a toast notification
+                        }
+                    }
+                });
+            });
+            $(document).on('click', '.edit-btn', function () {
+                var url = $(this).data('url'); // Get the URL from data-url attribute
+                
+        
+                // Make AJAX request to fetch author details
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function(response) {
+                        // Populate the form fields with the author's data
+                        $('#editForm [name="uuid"]').val(response.uuid);
+                        $('#editForm [name="name"]').val(response.name);
+                        $('#editForm [name="dob"]').val(response.dob);
+                        $('#editForm [name="country"]').val(response.country);
+        
+                        // Show the modal only after data is fetched
+                        $('#editModal').modal('show');
+                    },
+                    error: function() {
+                        toastr.error('Failed to fetch author details. Please try again.');
+                    }
+                });
+            });
+            
+            
+            
+        });
+    </script>
 {% endblock %}

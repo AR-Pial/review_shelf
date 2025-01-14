@@ -2,6 +2,7 @@ import uuid
 from django.contrib.auth.models import AbstractUser,BaseUserManager
 from django.db import models
 from django_countries.fields import CountryField
+from django.utils import timezone 
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -41,6 +42,8 @@ class CustomUserModel(AbstractUser):
 
     username = models.CharField(max_length=200, unique=True, null=True, blank=True) 
     country = CountryField(blank_label='(select country)', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     objects = CustomUserManager()
 
@@ -70,4 +73,11 @@ class CustomUserModel(AbstractUser):
         verbose_name = 'User'
         verbose_name_plural = 'Users'
         db_table = 'custom_user_model'
+
+class TimestampedModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
 
