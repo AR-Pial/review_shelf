@@ -15,8 +15,12 @@
                     {% for field in edit_form %}
                         <div class="mb-3">
                             {{ field|as_crispy_field }}
-                            <div class="text-danger" id="{{ field.name }}-error"></div>
+                            <div class="text-danger" id="edit-{{ field.name }}-error"></div>
                         </div>
+
+                        {% if field.name == "image" %}
+                            <div id="editImagePreview"></div>
+                        {% endif %}
                     {% endfor %}
                 </div>
                 <div class="modal-footer">
@@ -28,3 +32,5 @@
         </div>
     </div>
 </div>
+
+

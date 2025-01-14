@@ -31,11 +31,12 @@ class BookView(LoginRequiredMixin, TemplateView):
 # class AuthorView(LoginRequiredMixin, TemplateView):
 #     template_name = 'dashboard/author/author.html'
 
-class AuthorListView(ListView):
+class AuthorListView(LoginRequiredMixin, ListView):
     model = Author
     template_name = 'dashboard/author/author.html'
     context_object_name = 'authors'
     queryset = Author.objects.all().order_by('-created_at')
+    login_url = reverse_lazy('login')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -43,10 +44,11 @@ class AuthorListView(ListView):
         context['edit_form'] = AuthorForm() 
         return context
 
-class AuthorCreateView(CreateView):
+class AuthorCreateView(LoginRequiredMixin,CreateView):
     model = Author
     form_class = AuthorForm
     success_url = reverse_lazy('author')  
+    login_url = reverse_lazy('login')
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -63,10 +65,15 @@ class AuthorCreateView(CreateView):
             return JsonResponse({'errors': form.errors}, status=400)
         return super().form_invalid(form)
     
-class AuthorUpdateView(UpdateView):
+class AuthorUpdateView(LoginRequiredMixin,UpdateView):
     model = Author
     form_class = AuthorForm
-    success_url = reverse_lazy('author')  # Redirect after successful edit
+    success_url = reverse_lazy('author')  
+    login_url = reverse_lazy('login')
+
+    def get_object(self, queryset=None):
+        # Fetch the author object using the UUID from the URL
+        return get_object_or_404(Author, uuid=self.kwargs['uuid'])
 
     def get(self, request, *args, **kwargs):
         # Check if it's an AJAX request
@@ -79,29 +86,34 @@ class AuthorUpdateView(UpdateView):
                 'uuid': author.uuid,
                 'name': author.name,
                 'dob': author.dob,
-                'country': author.country.name if author.country else None,  # Handle None case
+                'bio': author.bio,
+                'country': author.country.code if author.country else None,  # Handle None case
                 'image': author.image.url if author.image else None,
             }
             return JsonResponse(response_data)
         
         # For non-AJAX requests, continue with normal handling
         return super().get(request, *args, **kwargs)
-
-
+    
     def form_valid(self, form):
         response = super().form_valid(form)
+        messages.warning(self.request, "Author Updated successfully!")
+        # Add success message
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'message': 'Author updated successfully!'})
+        # Check if the request is an AJAX request
+            return JsonResponse({'message': 'Author created successfully!'})
         return response
 
     def form_invalid(self, form):
+        # Handle form errors
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({'errors': form.errors}, status=400)
         return super().form_invalid(form)
     
-class AuthorDeleteView(DeleteView):
+class AuthorDeleteView(LoginRequiredMixin,DeleteView):
     model = Author
     success_url = reverse_lazy('author')  
+    login_url = reverse_lazy('login')
 
     def get_success_url(self):
         messages.error(self.request, "Author deleted successfully!")

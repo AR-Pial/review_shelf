@@ -17,6 +17,7 @@
                     <th>Image</th>
                     <th>Name</th>
                     <th>Date of Birth</th>
+                    <th>Bio</th>
                     <th>Country</th>
                     <th>Actions</th>
                 </tr>
@@ -26,19 +27,24 @@
                 <tr>
                     <td>
                         {% if author.image %}
-                            <img src="{{ author.image.url }}" alt="Author Image" class="img-thumbnail" width="65">
+                            <img src="{{ author.image.url }}" alt="Author Image" class="img-thumb-1">
                         {% else %}
                             <span>No Image</span>
                         {% endif %}
                     </td>
                     <td>{{ author.name }}</td>
                     <td>{{ author.dob }}</td>
+                    <td>
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top"  title="{{ author.bio }}">
+                            {{ author.bio|truncatewords:4 }}
+                        </button>  
+                    </td>
                     <td>{{ author.country }}</td>
                     <td>
-                        <button class="btn btn-sm btn-warning edit-btn" data-id="{{ author.uuid }}" data-url="{% url 'author_edit' author.uuid %}">
+                        <button class="btn btn-sm btn-warning px-3 edit-btn mx-1" data-id="{{ author.uuid }}" data-url="{% url 'author_edit' author.uuid %}">
                             Edit
                         </button>
-                        <form method="POST" action="{% url 'author_delete' author.uuid %}" class="d-inline delete-form">
+                        <form method="POST" action="{% url 'author_delete' author.uuid %}" class="d-inline mx-1 delete-form">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger btn-sm">
                                 Delete
@@ -105,10 +111,24 @@
                     type: 'GET',
                     success: function(response) {
                         // Populate the form fields with the author's data
-                        $('#editForm [name="uuid"]').val(response.uuid);
-                        $('#editForm [name="name"]').val(response.name);
-                        $('#editForm [name="dob"]').val(response.dob);
-                        $('#editForm [name="country"]').val(response.country);
+                        console.log(response)
+                        $('#editForm').find('#uuid').val(response.uuid);
+                        $('#editForm').find('#id_name').val(response.name);
+                        $('#editForm').find('#id_dob').val(response.dob);
+                        $('#editForm').find('#id_bio').val(response.bio);
+                        $('#editForm').find('#id_country').val(response.country);
+
+                        if (response.image) {
+                            // If an image exists, display it below the image input field
+                            $('#editImagePreview').html(
+                                `<img src="${response.image}" alt="Current Image" class="img-thumb-1 py-1">`
+                            );
+                        } else {
+                            // Clear the image preview if no image exists
+                            $('#imagePreview').html('');
+                        }
+
+                        $('#editForm').attr('action', url);
         
                         // Show the modal only after data is fetched
                         $('#editModal').modal('show');
@@ -118,8 +138,39 @@
                     }
                 });
             });
+
+            $('#editForm').on('submit', function (event) {
+                event.preventDefault(); // Prevent default form submission
             
+                var form = $(this);
+                var formData = new FormData(form[0]); // Serialize form data
+                var url = form.attr('action'); // Get the action URL
             
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: formData,
+                    processData: false, // Don't process the data
+                    contentType: false, // Let jQuery handle content type
+                    success: function (response) {
+                        $('#editModal').modal('hide'); // Hide the modal on success
+                        location.reload(); // Reload the page or dynamically update the table
+                    },
+                    error: function (response) {
+                        if (response.responseJSON && response.responseJSON.errors) {
+                            // Clear previous errors
+                            $('.text-danger').empty();
+            
+                            // Display new errors
+                            $.each(response.responseJSON.errors, function (field, errors) {
+                                $('#edit-' + field + '-error').html(errors.join('<br>'));
+                            });
+            
+                            toastr.error('Failed to update author. Please check the errors and try again.');
+                        }
+                    }
+                });
+            });
             
         });
     </script>

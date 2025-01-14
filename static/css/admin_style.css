@@ -22,3 +22,13 @@ a{
 .admin-sidebar-menu ul{
  list-style-type: none !important;
 }
+
+/* ------------- */
+.img-thumb-1{
+    width: 50px;
+    height: 45px;
+}
+
+.tooltip-inner {
+    max-width: 285px !important;  
+}
