@@ -7,8 +7,6 @@ Review Shelf is a book review and rating community platform built with Django.
 ### Prerequisites
 
 - Python 3.9+
-- Django 5.*+
-- Virtualenv (recommended)
 
 ### Installation Steps
 
