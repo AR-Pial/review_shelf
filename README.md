@@ -24,6 +24,9 @@ source env/bin/activate  # On Windows use `env\Scripts\activate`
 # Install Dependencies
 pip install -r requirements.txt
 
+# Create .env File 
+Copy the contents from .env.example and add your credentials
+
 # Apply Migrations
 python manage.py migrate
 
