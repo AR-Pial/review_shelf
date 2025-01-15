@@ -1,0 +1,51 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+{% block content %}
+<div class="container mt-4 bg-light pt-3 rounded">
+    <div class="d-flex justify-content-between">
+        <h4>Genre List</h4>
+        <a href="{% url 'genre_create' %}" class="btn btn-sm btn-primary mb-3">
+            Add New Genre
+        </a>
+    </div>
+
+    <!-- Author List -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for genre in genres %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ genre.name }}</td>
+                    <td>
+                        <a class="btn btn-sm btn-warning px-3 mx-1" href="{% url 'genre_update' genre.id %}">Edit</a>
+                        <a class="btn btn-danger btn-sm mx-1" href="{% url 'genre_delete' genre.id %}">Delete</a> 
+                        {% comment %} <form method="POST" action="{% url 'genre_delete' genre.id %}" class="d-inline mx-1 delete-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                Delete
+                            </button>
+                        </form>  {% endcomment %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center">No genre found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+{% block script %}
+
+{% endblock %}

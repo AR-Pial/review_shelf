@@ -1,7 +1,7 @@
 {% extends 'dashboard/dashboard_base.html' %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-4 bg-light pt-3 rounded">
     <div class="d-flex justify-content-between">
         <h4>Author List</h4>
         <button class="btn btn-sm btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#createModal">
@@ -11,7 +11,7 @@
 
     <!-- Author List -->
     <div class="table-responsive">
-        <table class="table table-bordered">
+        <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Image</th>
@@ -39,7 +39,7 @@
                             {{ author.bio|truncatewords:4 }}
                         </button>  
                     </td>
-                    <td>{{ author.country }}</td>
+                    <td>{{ author.country.name }}</td>
                     <td>
                         <button class="btn btn-sm btn-warning px-3 edit-btn mx-1" data-id="{{ author.uuid }}" data-url="{% url 'author_edit' author.uuid %}">
                             Edit
@@ -54,7 +54,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="text-center">No authors found.</td>
+                    <td colspan="6" class="text-center">No authors found.</td>
                 </tr>
                 {% endfor %}
             </tbody>

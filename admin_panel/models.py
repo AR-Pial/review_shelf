@@ -27,7 +27,6 @@ class Author(TimestampedModel):
 
 
 class Genre(TimestampedModel):
-    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, unique=True)
 
     class Meta:
@@ -38,7 +37,6 @@ class Genre(TimestampedModel):
 
 
 class Type(TimestampedModel):
-    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
 
     class Meta:

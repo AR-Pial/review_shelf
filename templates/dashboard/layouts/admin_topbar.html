@@ -1,3 +1,11 @@
-<div class="topbar-bg d-flex flex-wrap py-2 px-2 px-lg-3">
-    <a href="{% url 'dashboard' %}">Dashboard</a>
+<div class="topbar-bg d-flex flex-wrap justify-content-between py-2 px-2 px-lg-3">
+    <div>
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+    </div>
+    <div>
+        <form action="{% url 'logout' %}" method="POST" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-danger fs-6">Logout</button>
+        </form>
+    </div>
 </div>

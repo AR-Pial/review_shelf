@@ -41,3 +41,4 @@ class UserRegistrationView(CreateView):
         user.groups.add(user_group)  # Add the user to the 'User' group
 
         return super().form_valid(form)
+

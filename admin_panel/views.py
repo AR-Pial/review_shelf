@@ -3,8 +3,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView, ListView
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView,DeleteView,UpdateView
-from .models import Author
-from .forms import AuthorForm
+from .models import Author,Genre
+from .forms import AuthorForm, GenreForm
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -35,8 +35,11 @@ class AuthorListView(LoginRequiredMixin, ListView):
     model = Author
     template_name = 'dashboard/author/author.html'
     context_object_name = 'authors'
-    queryset = Author.objects.all().order_by('-created_at')
+    # queryset = Author.objects.all().order_by('-created_at')
     login_url = reverse_lazy('login')
+
+    def get_queryset(self):
+        return Author.objects.all().order_by('-created_at')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -119,6 +122,47 @@ class AuthorDeleteView(LoginRequiredMixin,DeleteView):
         messages.error(self.request, "Author deleted successfully!")
         return super().get_success_url()
 
+# Genre
+class GenreListView(LoginRequiredMixin,ListView):
+    model = Genre
+    template_name = 'dashboard/genre/genre_list.html'
+    context_object_name = 'genres'
+    login_url = reverse_lazy('login')
+
+    def get_queryset(self):
+        return Genre.objects.all().order_by('-created_at')
+
+class GenreCreateView(LoginRequiredMixin,CreateView):
+    model = Genre
+    form_class = GenreForm
+    template_name = 'dashboard/genre/genre_form.html'
+    success_url = reverse_lazy('genre_list')
+    login_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        messages.success(self.request, "Genre created successfully!")
+        return super().form_valid(form)
+
+class GenreUpdateView(LoginRequiredMixin,UpdateView):
+    model = Genre
+    form_class = GenreForm
+    template_name = 'dashboard/genre/genre_form.html'
+    success_url = reverse_lazy('genre_list')
+    login_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        messages.warning(self.request, "Genre updated successfully!")
+        return super().form_valid(form)
+
+class GenreDeleteView(LoginRequiredMixin, DeleteView):
+    model = Genre
+    template_name = 'dashboard/genre/genre_confirm_delete.html'
+    success_url = reverse_lazy('genre_list')
+    login_url = reverse_lazy('login')
+
+    def get_success_url(self):
+        messages.error(self.request, "Genre deleted successfully!")
+        return super().get_success_url()
 
     
 
