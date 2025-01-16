@@ -11,7 +11,7 @@
 
     <!-- Author List -->
     <div class="table-responsive">
-        <table class="table table-striped">
+        <table class="table table-striped table-bordered">
             <thead>
                 <tr>
                     <th>Image</th>
@@ -35,9 +35,11 @@
                     <td>{{ author.name }}</td>
                     <td>{{ author.dob }}</td>
                     <td>
-                        <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top"  title="{{ author.bio }}">
-                            {{ author.bio|truncatewords:4 }}
-                        </button>  
+                        {% if author.bio %}
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top"  title="{{ author.bio }}">
+                                {{ author.bio|truncatewords:4 }}
+                            </button>  
+                        {% endif %}
                     </td>
                     <td>{{ author.country.name }}</td>
                     <td>

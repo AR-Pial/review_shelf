@@ -3,8 +3,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView, ListView
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView,DeleteView,UpdateView
-from .models import Author,Genre
-from .forms import AuthorForm, GenreForm
+from .models import Author,Genre,Type
+from .forms import AuthorForm,GenreForm,TypeForm
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -76,13 +76,13 @@ class AuthorUpdateView(LoginRequiredMixin,UpdateView):
 
     def get_object(self, queryset=None):
         # Fetch the author object using the UUID from the URL
-        return get_object_or_404(Author, uuid=self.kwargs['uuid'])
+        return get_object_or_404(Author, uuid=self.kwargs['pk'])
 
     def get(self, request, *args, **kwargs):
         # Check if it's an AJAX request
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             # Fetch the author object for AJAX requests
-            author = get_object_or_404(Author, uuid=self.kwargs['uuid'])
+            author = get_object_or_404(Author, uuid=self.kwargs['pk'])
             
             # Prepare the data to send as JSON
             response_data = {
@@ -164,6 +164,45 @@ class GenreDeleteView(LoginRequiredMixin, DeleteView):
         messages.error(self.request, "Genre deleted successfully!")
         return super().get_success_url()
 
-    
+# Type
+class TypeListView(LoginRequiredMixin,ListView):
+    model = Type
+    template_name = 'dashboard/type/type_list.html'
+    context_object_name = 'types'
+    login_url = reverse_lazy('login')
 
+    def get_queryset(self):
+        return Type.objects.all().order_by('-created_at')
+
+class TypeCreateView(LoginRequiredMixin,CreateView):
+    model = Type
+    form_class = TypeForm
+    template_name = 'dashboard/type/form.html'
+    success_url = reverse_lazy('type_list')
+    login_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        messages.success(self.request, "Type created successfully!")
+        return super().form_valid(form)
+
+class TypeUpdateView(LoginRequiredMixin,UpdateView):
+    model = Type
+    form_class = TypeForm
+    template_name = 'dashboard/type/form.html'
+    success_url = reverse_lazy('type_list')
+    login_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        messages.warning(self.request, "Type updated successfully!")
+        return super().form_valid(form)
+
+class TypeDeleteView(LoginRequiredMixin, DeleteView):
+    model = Type
+    template_name = 'dashboard/type/confirm_delete.html'
+    success_url = reverse_lazy('type_list')
+    login_url = reverse_lazy('login')
+
+    def get_success_url(self):
+        messages.error(self.request, "Type deleted successfully!")
+        return super().get_success_url()
     

@@ -12,6 +12,9 @@
     <!-- Toastr CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
 
+    <!-- DataTables CSS (for Bootstrap 5) -->
+    <link href="https://cdn.datatables.net/2.2.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/admin_style.css' %}">
 </head>
@@ -50,9 +53,13 @@
     <!-- Toastr JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.2.1/js/dataTables.bootstrap5.min.js"></script>
+
     <script>
         toastr.options = {
-            "timeOut": "1400", 
+            "timeOut": "1300", 
             "progressBar": true, 
         };
     </script>
@@ -76,6 +83,10 @@
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
             })
+
+            $('.dt-table').DataTable({
+                pageLength: 25,  // Example to show 20 rows per page by default
+            });
         });
     </script>
     {% block script %}
