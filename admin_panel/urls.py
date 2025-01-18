@@ -3,7 +3,6 @@ from .views import *
 
 urlpatterns = [
     path('', DashboardView.as_view(), name='dashboard'),
-    path('book', BookView.as_view(), name='book'),
     # Author
     path('author/list', AuthorListView.as_view(), name='author'),
     path('author/create', AuthorCreateView.as_view(), name='author_create'),
@@ -19,4 +18,9 @@ urlpatterns = [
     path('type/create', TypeCreateView.as_view(), name='type_create'),
     path('type/<int:pk>/update/', TypeUpdateView.as_view(), name='type_update'),
     path('type/<int:pk>/delete/', TypeDeleteView.as_view(), name='type_delete'),
+    # Type
+    path('book/list', BookListView.as_view(), name='book_list'),
+    path('book/create', BookCreateView.as_view(), name='book_create'),
+    path('book/<uuid:pk>/update/', BookUpdateView.as_view(), name='book_update'),
+    path('book/<uuid:pk>/delete/', BookDeleteView.as_view(), name='book_delete'),
 ]

@@ -2,8 +2,8 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container mt-4">
-    <h4 class="text-center pb-2">{% if view.object %}Update{% else %}Create{% endif %} Type</h4>
+<div class="container my-3 my-lg-4">
+    <h4 class="text-center pb-2">{% if view.object %}Update{% else %}Create{% endif %} Book</h4>
     <div class="row justify-content-center">
         <form class="col-12 col-lg-9" method="post">
             {% csrf_token %}

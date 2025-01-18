@@ -15,6 +15,9 @@
     <!-- DataTables CSS (for Bootstrap 5) -->
     <link href="https://cdn.datatables.net/2.2.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 
+    <!-- Add Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/admin_style.css' %}">
 </head>
@@ -57,6 +60,9 @@
     <script src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.2.1/js/dataTables.bootstrap5.min.js"></script>
 
+     <!-- Add Select2 JS -->
+     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <script>
         toastr.options = {
             "timeOut": "1300", 
@@ -86,6 +92,15 @@
 
             $('.dt-table').DataTable({
                 pageLength: 25,  // Example to show 20 rows per page by default
+            });
+
+            $('.select2').each(function() {
+                $(this).select2({
+                    width: '100%',  // Full width
+                    allowClear: true,
+                    placeholder: $(this).data('placeholder') || 'Select an option',  // Use the 'data-placeholder' attribute if present, otherwise use default
+                    tags: $(this).data('tags') || false  // Enable tags if the 'data-tags' attribute is true, otherwise false
+                });
             });
         });
     </script>

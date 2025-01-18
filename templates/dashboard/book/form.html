@@ -1,0 +1,49 @@
+{% extends 'dashboard/dashboard_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container my-3 my-lg-4">
+    <h4 class="text-center pb-2">{% if view.object %}Update{% else %}Create{% endif %} Book</h4>
+    <div class="row justify-content-center">
+        <form class="col-12 col-lg-9" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form %}
+                {% if field.name == "cover_photo" %}
+                    <!-- Display current cover photo if available -->
+                    {% if form.instance.cover_photo %}
+                        <div>
+                            <label for="" class="form-label">
+                                Current Cover photo
+                            </label> <br>
+                            <img src="{{ form.instance.cover_photo.url }}" alt="Current Cover Photo" style="max-height: 120px;">
+                        </div>
+                        <div>
+                            <input type="checkbox" class="form-check-input" name="cover_photo-clear" id="cover_photo-clear_id">
+                            <label class="form-check-label" for="cover_photo-clear_id">Clear</label>
+                        </div>
+                        <div class="my-3">
+                            <label for="id_cover_photo" class="form-label">
+                                New Cover photo
+                            </label>
+                            <input type="file" name="cover_photo" class="form-control" accept="image/*" id="id_cover_photo">
+                        </div>
+                    {% else %}
+                        <!-- Render file input field if no current image -->
+                        {{ field|as_crispy_field }}
+                        {{ field.errors }}
+                    {% endif %}
+                {% else %}
+                    <!-- Render other fields normally -->
+                    <div>
+                        {{ field|as_crispy_field }}
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">
+                {% if view.object %}Update{% else %}Create{% endif %}
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
