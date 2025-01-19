@@ -9,6 +9,9 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.forms.models import model_to_dict
+from django.core.paginator import Paginator
+from django.urls import reverse 
+from django.db.models import Q
 
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'dashboard/dashboard.html'
@@ -197,7 +200,44 @@ class BookListView(LoginRequiredMixin,ListView):
 
     def get_queryset(self):
         return Book.objects.all().order_by('-created_at')
-    
+
+    def get(self, request, *args, **kwargs):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            # DataTables sends the `start` parameter which indicates the starting index
+            start = int(request.GET.get('start', 0))
+            length = int(request.GET.get('length', 10))
+            search = request.GET.get('search[value]', '')
+            queryset = self.get_queryset()
+            if search:
+                queryset = queryset.filter(
+                Q(title__icontains=search) |
+                Q(isbn__icontains=search) |
+                Q(author__name__icontains=search)  # Assuming `Author` has a `name` field
+            )
+            paginator = Paginator(queryset, length)
+            page_number = (start // length) + 1
+            page_obj = paginator.get_page(page_number)
+
+            data = {
+                'recordsTotal': paginator.count,
+                'recordsFiltered': paginator.count,
+                'data': [
+                    {
+                        'uuid': str(item.uuid),
+                        'title': item.title,
+                        'cover_photo': item.cover_photo.url if item.cover_photo else '',
+                        'author': item.author.name if item.author else '',
+                        'isbn': item.isbn,
+                        'edit_url': reverse('book_update', kwargs={'pk': item.uuid}),
+                        'delete_url': reverse('book_delete', kwargs={'pk': item.uuid}),
+                    } for item in page_obj
+                ],
+            }
+
+            return JsonResponse(data)
+
+        return super().get(request, *args, **kwargs)
+
 class BookCreateView(LoginRequiredMixin,CreateView):
     model = Book
     form_class = BookForm

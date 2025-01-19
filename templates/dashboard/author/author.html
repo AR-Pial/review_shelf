@@ -11,9 +11,10 @@
 
     <!-- Author List -->
     <div class="table-responsive">
-        <table class="table table-striped table-bordered">
+        <table class="table table-striped table-bordered {% if authors %}dt-table{% endif %}">
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>Image</th>
                     <th>Name</th>
                     <th>Date of Birth</th>
@@ -25,6 +26,7 @@
             <tbody>
                 {% for author in authors %}
                 <tr>
+                    <td>{{forloop.counter}}</td>
                     <td>
                         {% if author.image %}
                             <img src="{{ author.image.url }}" alt="Author Image" class="img-thumb-1">
@@ -70,110 +72,45 @@
 
 {% endblock %}
 {% block script %}
-    <script>
-        $(document).ready(function () {
-            // Handle form submission via AJAX
-            $('#createForm').on('submit', function (event) {
-                event.preventDefault(); // Prevent default form submission
-
-                var form = $(this);
-                var formData = new FormData(form[0]); // Serialize form data
-
-                $.ajax({
-                    url: "{% url 'author_create' %}", // URL for creating author
-                    type: 'POST',
-                    data: formData,
-                    processData: false, // Don't process the data
-                    contentType: false, // Let jQuery handle content type
-                    success: function (response) {
-                        location.reload(); 
-                    },
-                    error: function (response) {
-                        if (response.responseJSON && response.responseJSON.errors) {
-                            // Clear previous errors
-                            //$('.text-danger').empty();
-                            
-                            // Loop through the errors and display them
-                            $.each(response.responseJSON.errors, function (field, errors) {
-                                $('#' + field + '-error').html(errors.join('<br>'));
-                            });
-                    
-                            toastr.error('Error submitting the form!'); // Optional: Show a toast notification
-                        }
-                    }
-                });
-            });
-            $(document).on('click', '.edit-btn', function () {
-                var url = $(this).data('url'); // Get the URL from data-url attribute
-                
-        
-                // Make AJAX request to fetch author details
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function(response) {
-                        // Populate the form fields with the author's data
-                        console.log(response)
-                        $('#editForm').find('#uuid').val(response.uuid);
-                        $('#editForm').find('#id_name').val(response.name);
-                        $('#editForm').find('#id_dob').val(response.dob);
-                        $('#editForm').find('#id_bio').val(response.bio);
-                        $('#editForm').find('#id_country').val(response.country);
-
-                        if (response.image) {
-                            // If an image exists, display it below the image input field
-                            $('#editImagePreview').html(
-                                `<img src="${response.image}" alt="Current Image" class="img-thumb-1 py-1">`
-                            );
-                        } else {
-                            // Clear the image preview if no image exists
-                            $('#imagePreview').html('');
-                        }
-
-                        $('#editForm').attr('action', url);
-        
-                        // Show the modal only after data is fetched
-                        $('#editModal').modal('show');
-                    },
-                    error: function() {
-                        toastr.error('Failed to fetch author details. Please try again.');
-                    }
-                });
-            });
-
-            $('#editForm').on('submit', function (event) {
-                event.preventDefault(); // Prevent default form submission
-            
-                var form = $(this);
-                var formData = new FormData(form[0]); // Serialize form data
-                var url = form.attr('action'); // Get the action URL
-            
-                $.ajax({
-                    url: url,
-                    type: 'POST',
-                    data: formData,
-                    processData: false, // Don't process the data
-                    contentType: false, // Let jQuery handle content type
-                    success: function (response) {
-                        $('#editModal').modal('hide'); // Hide the modal on success
-                        location.reload(); // Reload the page or dynamically update the table
-                    },
-                    error: function (response) {
-                        if (response.responseJSON && response.responseJSON.errors) {
-                            // Clear previous errors
-                            $('.text-danger').empty();
-            
-                            // Display new errors
-                            $.each(response.responseJSON.errors, function (field, errors) {
-                                $('#edit-' + field + '-error').html(errors.join('<br>'));
-                            });
-            
-                            toastr.error('Failed to update author. Please check the errors and try again.');
-                        }
-                    }
-                });
-            });
-            
+<script>
+    $(document).ready(function() {
+        var table = $('#book-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '{% url "book_list" %}',
+                type: 'GET',
+                dataSrc: 'data',
+                data: function(d) {
+                    d.page = (d.start / d.length) + 1;
+                    d.last_item_id = $('#book-table').data('last-item-id') || null;
+                },
+                complete: function(response) {
+                    $('#book-table').data('last-item-id', response.responseJSON.last_item_id);
+                }
+            },
+            columns: [
+                { data: 'uuid' },
+                { data: 'title' },
+                { data: 'cover_photo', render: function(data) {
+                    return data ? `<a href="${data}" data-lightbox="book-covers"><img src="${data}" alt="Cover" height="40"></a>` : '';
+                }},
+                { data: 'author' },
+                { data: 'isbn' },
+                { data: null, render: function(data) {
+                    return `
+                        <a class="btn btn-sm btn-warning px-3 mx-1" href="${data.edit_url}">Edit</a>
+                        <a class="btn btn-danger btn-sm mx-1" href="${data.delete_url}">Delete</a>
+                    `;
+                }}
+            ],
+            language: {
+                search: "Search books:"
+            },
+            pageLength: 5,
+            dom: 'lfrtip',
         });
-    </script>
+    });
+    
+</script>
 {% endblock %}
